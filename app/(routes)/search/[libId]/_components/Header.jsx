@@ -4,7 +4,11 @@ import { Clock, Link, Send } from 'lucide-react'
 import moment from 'moment'
 import React from 'react'
 
+
+
+
 function Header({ searchInputRecord }) {
+    console.log("🔍 Header received:", searchInputRecord);
     return (
         <div className='p-4 border-b flex justify-between items-center'>
             <div className='flex gap-2 items-center'>
@@ -15,7 +19,9 @@ function Header({ searchInputRecord }) {
                 </div>
             </div>
 
-            <h2 className='line-clamp-1 max-w-md'>{searchInputRecord?.searchInput}</h2>
+            <h2 className='line-clamp-1 max-w-md'>{searchInputRecord?.searchinput}</h2>
+           
+
 
             <div className=' flex gap-3'>
                 <Button><Link /></Button>
@@ -23,6 +29,8 @@ function Header({ searchInputRecord }) {
             </div>
 
         </div>
+       
+
     )
 }
 

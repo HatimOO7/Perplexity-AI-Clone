@@ -49,7 +49,7 @@ function ChatInputBox (){
       }
     ]).select();
     setLoading(false);
-    router.push('/search/'+libId);
+    router.push('/search/' + libId);
 
     console.log(data[0]);
   }
