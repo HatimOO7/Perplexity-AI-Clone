@@ -27,7 +27,7 @@ export const AIModelsOption = [
   },
 ];
 
-const SEARCH_RESULT = {
+export const SEARCH_RESULT = {
   query: {
     original: "tehrik",
     show_strict_warning: false,
@@ -502,4 +502,9 @@ const SEARCH_RESULT = {
     family_friendly: true,
   },
 };
+
+
+
+
+
   

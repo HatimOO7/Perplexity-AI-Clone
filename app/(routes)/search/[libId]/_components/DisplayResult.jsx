@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AnswerDisplay from "./AnswerDisplay";
+import { SEARCH_RESULT } from "@/services/Shared";
+
 import {
   LucideSparkles,
   LucideImage,
@@ -22,11 +24,13 @@ function DisplayResult({ searchInputRecord }) {
   const chat = {
     searchResult: ["Example Source 1", "Example Source 2"],
   };
+  const [searchResult, setSearchResult] = useState(SEARCH_RESULT);
 
   useEffect(() => {
-    if (!searchInputRecord) return;
+    
+  }, [searchInputRecord]);
 
-    const GetSearchApiResult = async () => {
+  const GetSearchApiResult = async () => {
       try {
         const result = await axios.post("/api/brave-search-api", {
           searchInput: searchInputRecord.searchinput,
@@ -39,9 +43,6 @@ function DisplayResult({ searchInputRecord }) {
         console.error("Error fetching API result:", error);
       }
     };
-
-    GetSearchApiResult();
-  }, [searchInputRecord]);
 
   return (
     <div className="mt-7">
@@ -99,7 +100,7 @@ function DisplayResult({ searchInputRecord }) {
       </div>
 
       <hr className="my-5" />
-      <div>{activeTab === "Answer" ? <AnswerDisplay /> : null}</div>
+      <div>{activeTab === "Answer" ? <AnswerDisplay searchResult={searchResult} /> : null}</div>
     </div>
   );
 }
