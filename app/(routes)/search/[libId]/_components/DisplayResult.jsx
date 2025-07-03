@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AnswerDisplay from "./AnswerDisplay";
 import {
   LucideSparkles,
@@ -6,6 +6,7 @@ import {
   LucideVideo,
   LucideList,
 } from "lucide-react";
+import axios from "axios";
 
 const tabs = [
   { label: "Answer", icon: LucideSparkles },
@@ -17,15 +18,35 @@ const tabs = [
 function DisplayResult({ searchInputRecord }) {
   const [activeTab, setActiveTab] = useState("Answer");
 
-  // Example search results
+  // Example search results (mock data)
   const chat = {
     searchResult: ["Example Source 1", "Example Source 2"],
   };
 
+  useEffect(() => {
+    if (!searchInputRecord) return;
+
+    const GetSearchApiResult = async () => {
+      try {
+        const result = await axios.post("/api/brave-search-api", {
+          searchInput: searchInputRecord.searchinput,
+          searchType: searchInputRecord.type,
+        });
+
+        console.log(result.data);
+        console.log(JSON.stringify(result.data));
+      } catch (error) {
+        console.error("Error fetching API result:", error);
+      }
+    };
+
+    GetSearchApiResult();
+  }, [searchInputRecord]);
+
   return (
     <div className="mt-7">
       <h2 className="font-medium text-3xl line-clamp-2">
-        {searchInputRecord?.searchinput}
+        {searchInputRecord?.searchInput}
       </h2>
 
       <div className="flex items-center space-x-6 border-b border-gray-200 pb-2 mt-6">
@@ -78,10 +99,7 @@ function DisplayResult({ searchInputRecord }) {
       </div>
 
       <hr className="my-5" />
-      <div>
-        {activeTab == "Answer" ? 
-          <AnswerDisplay /> : null}
-      </div>
+      <div>{activeTab === "Answer" ? <AnswerDisplay /> : null}</div>
     </div>
   );
 }
