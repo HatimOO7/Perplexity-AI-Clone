@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/services/superbase";
+import { supabase } from "@/services/supabase";
 import { UserDetailContext } from "@/components/context/UserDetailContext";
 
 function Provider ({ children }) {

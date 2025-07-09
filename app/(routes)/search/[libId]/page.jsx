@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useParams } from 'next/navigation';
-import { supabase } from '@/services/superbase';
+import { supabase } from '@/services/supabase';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import Header from './_components/Header';

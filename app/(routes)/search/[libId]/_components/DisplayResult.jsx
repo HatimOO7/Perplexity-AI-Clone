@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import AnswerDisplay from "./AnswerDisplay";
 import { SEARCH_RESULT } from "@/services/Shared";
+import { supabase } from '@/services/supabase';
+import { useParams } from 'next/navigation';
+
 
 import {
   LucideSparkles,
@@ -25,24 +28,59 @@ function DisplayResult({ searchInputRecord }) {
     searchResult: ["Example Source 1", "Example Source 2"],
   };
   const [searchResult, setSearchResult] = useState(SEARCH_RESULT);
+  const { libId } = useParams();
 
-  useEffect(() => {
-    
-  }, [searchInputRecord]);
+ useEffect(() => {
+  if (searchInputRecord?.searchinput) {
+    GetSearchApiResult();
+  }
+}, [searchInputRecord]);
 
-  const GetSearchApiResult = async () => {
-      try {
-        const result = await axios.post("/api/brave-search-api", {
-          searchInput: searchInputRecord.searchinput,
-          searchType: searchInputRecord.type,
-        });
 
-        console.log(result.data);
-        console.log(JSON.stringify(result.data));
-      } catch (error) {
-        console.error("Error fetching API result:", error);
-      }
-    };
+ const GetSearchApiResult = async () => {
+  try {
+    const result = await axios.post("/api/brave-search-api", {
+      searchInput: searchInputRecord.searchinput,
+      searchType: searchInputRecord.type,
+    });
+
+    console.log("API result:", result.data);
+
+    const searchResp = result.data;
+
+    const formattedSearchResp = searchResp?.web?.results?.map((item, index) => ({
+      title: item?.title,
+      description: item?.description,
+      long_name: item?.profile?.long_name,
+      img: item?.profile?.img,
+      url: item?.url,
+      thumbnail: item?.thumbnail?.src,
+      original: item?.thumbnail?.original,
+    }));
+
+    console.log("Formatted Search Response:", formattedSearchResp);
+
+    const { data, error } = await supabase
+      .from("Chats")
+      .insert([
+        {
+          libId: libId,
+          searchResult: formattedSearchResp,
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+    } else {
+      console.log("Inserted Chat Data:", data);
+    }
+
+  } catch (error) {
+    console.error("Error in GetSearchApiResult:", error);
+  }
+};
+
 
   return (
     <div className="mt-7">
