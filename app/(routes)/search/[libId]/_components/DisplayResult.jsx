@@ -31,9 +31,7 @@ function DisplayResult({ searchInputRecord }) {
   const { libId } = useParams();
 
  useEffect(() => {
-  if (searchInputRecord?.searchinput) {
-    GetSearchApiResult();
-  }
+  searchInputRecord && GetSearchApiResult();
 }, [searchInputRecord]);
 
 
@@ -69,6 +67,7 @@ function DisplayResult({ searchInputRecord }) {
         },
       ])
       .select();
+    console.log("Supabase insert response:", data.id);
 
     if (error) {
       console.error("Supabase insert error:", error);
@@ -76,10 +75,22 @@ function DisplayResult({ searchInputRecord }) {
       console.log("Inserted Chat Data:", data);
     }
 
+    await GenerateAIResp(formattedSearchResp, data[0].id);
   } catch (error) {
     console.error("Error in GetSearchApiResult:", error);
   }
 };
+
+const GenerateAIResp = async (formattedSearchResp, recordId) => {
+        const result = await axios.post('/api/llm-model', {
+            searchInput: searchInputRecord?.searchInput,
+            searchResult: formattedSearchResp,
+            recordId: recordId
+        });
+
+        console.log("LLM Model Response:", result.data);
+
+      }
 
 
   return (
