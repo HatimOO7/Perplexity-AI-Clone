@@ -31,10 +31,10 @@ function AnswerDisplay({ searchResult }) {
                 ) : (
                   <div className="w-[20px] h-[20px] bg-gray-300 rounded-full" />
                 )}
-                <h2 className="text-xs font-medium">{name}</h2>
+                <h2 className="text-xs font-medium">{item?.profile?.long_name}</h2>
               </div>
 
-              <h2 className="line-clamp-2 text-black text-xs">{description}</h2>
+              <h2 className="line-clamp-2 text-black text-xs">{item?.description}</h2>
             </div>
           );
         })}
