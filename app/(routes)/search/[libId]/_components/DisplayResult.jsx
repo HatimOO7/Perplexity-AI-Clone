@@ -20,14 +20,16 @@ const tabs = [
 ];
 
 function DisplayResult({ searchInputRecord }) {
-  const [activeTab, setActiveTab] = useState("Answer");
+  const [activeTab, setActiveTab] = useState('Answer');
   const [searchResult, setSearchResult] = useState(SEARCH_RESULT);
   const { libId } = useParams();
 
   useEffect(() => {
     //update this methods
 
-    searchInputRecord && GetSearchApiResult(searchInputRecord.searchinput);
+    searchInputRecord?.Chats?.length==0 && GetSearchApiResult(searchInputRecord.searchinput);
+    setSearchResult(searchInputRecord)
+    console.log("Search Input Record:", searchInputRecord);
   }, [searchInputRecord]);
 
   const GetSearchApiResult = async (searchInput) => {
@@ -56,6 +58,7 @@ function DisplayResult({ searchInputRecord }) {
         {
           libId: libId,
           searchResult: formattedSearchResp,
+          userSearchInput: searchInputRecord?.searchinput
         },
       ])
       .select();
@@ -95,11 +98,11 @@ function DisplayResult({ searchInputRecord }) {
 
   return (
     <div className="mt-7">
-      <h2 className="font-medium text-3xl line-clamp-2">
-        {searchInputRecord?.searchinput}
-      </h2>
+      {searchResult?.Chats?.map((chat, index) => (
+          <div key={index}>
 
-      <div className="flex items-center space-x-6 border-b border-gray-200 pb-2 mt-6">
+
+            <div className="flex items-center space-x-6 border-b border-gray-200 pb-2 mt-6">
         {tabs.map(({ label, icon: Icon, badge }) => (
           <button
             key={label}
@@ -130,6 +133,11 @@ function DisplayResult({ searchInputRecord }) {
           <AnswerDisplay searchResult={searchResult} />
         ) : null}
       </div>
+        </div>
+      ))}
+      
+
+      
     </div>
   );
 }
