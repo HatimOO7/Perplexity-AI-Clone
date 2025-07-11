@@ -98,8 +98,11 @@ function DisplayResult({ searchInputRecord }) {
 
   return (
     <div className="mt-7">
+
       {searchResult?.Chats?.map((chat, index) => (
-          <div key={index}>
+          <div key={index} className="mt-7">
+
+            <h2 className='font-bold text-4xl text-gray-600'>{chat?.userSearchInput}</h2>
 
 
             <div className="flex items-center space-x-6 border-b border-gray-200 pb-2 mt-6">
@@ -129,10 +132,12 @@ function DisplayResult({ searchInputRecord }) {
       </div>
 
       <div>
-        {activeTab === "Answer" ? (
-          <AnswerDisplay searchResult={searchResult} />
+        {activeTab === 'Answer' ? (
+          <AnswerDisplay chat={chat} />
         ) : null}
       </div>
+
+      <hr className="my-5 border-gray-200" />
         </div>
       ))}
       
