@@ -1,11 +1,11 @@
 import React from 'react'
-//import ReactMarkdown from 'react-markdown'
+import ReactMarkdown from 'react-markdown'
 
 
 function DisplaySummery({aiResp}) {
   return (
     <div>
-      <h2>{aiResp}</h2>
+      <ReactMarkdown>{aiResp}</ReactMarkdown>
     </div>
   )
 }
