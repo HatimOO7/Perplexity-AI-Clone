@@ -1,20 +1,21 @@
-//ai
+// DisplayResult.jsx
 import React, { useEffect, useState } from "react";
 import AnswerDisplay from "./AnswerDisplay";
 import axios from "axios";
 import { supabase } from "@/services/supabase";
 import VideoListTab from "./VideoListTab";
-
+import ImageListTab from "./ImageListTab";
+import SourceListTab from "./SourceListTab";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
   LucideSparkles,
   LucideImage,
   LucideVideo,
   LucideList,
+  Send,
+  Loader2Icon,
 } from "lucide-react";
-import { SEARCH_RESULT } from "@/services/Shared"; // You might not need this if you're fetching live data
-import { useParams } from "next/navigation";
-import ImageListTab from "./ImageListTab";
-import SourceListTab from "./SourceListTab";
 
 const tabs = [
   { label: "Answer", icon: LucideSparkles },
@@ -25,30 +26,34 @@ const tabs = [
 
 function DisplayResult({ searchInputRecord }) {
   const [activeTab, setActiveTab] = useState("Answer");
-  const [searchResult, setSearchResult] = useState(searchInputRecord); // Consider initializing with null or an empty object
-  const { libId } = useParams();
+  const [searchResult, setSearchResult] = useState(searchInputRecord);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [userInput, setUserInput] = useState("");
+  const { libId } = useParams();
 
-   useEffect(() => {
-    //update this methods
-
-    searchInputRecord?.Chats?.length==0 && GetSearchApiResult(searchInputRecord.searchinput);
-    setSearchResult(searchInputRecord)
-    console.log("Search Input Record:", searchInputRecord);
+  useEffect(() => {
+    const init = async () => {
+      if (searchInputRecord?.Chats?.length === 0) {
+        await GetSearchApiResult(searchInputRecord.searchinput);
+      } else {
+        setSearchResult(searchInputRecord);
+      }
+      console.log("Search Input Record:", searchInputRecord);
+    };
+    init();
   }, [searchInputRecord]);
 
   const GetSearchApiResult = async (searchInput) => {
     setLoadingSearch(true);
     try {
-      // Uncomment and use this to get actual search results
       const result = await axios.post("/api/brave-search-api", {
-        searchInput: searchInput, // Use the passed searchInput
-        searchType: searchInputRecord?.type, // Assuming searchInputRecord has a type
+        searchInput: searchInput,
+        searchType: searchInputRecord?.type ?? "Search",
       });
 
-      console.log("Brave Search API Result:", result.data); // Log the actual API response
+      console.log("Brave Search API Result:", result.data);
 
-      const searchResp = result.data; // Use the data from the API call
+      const searchResp = result.data;
 
       const formattedSearchResp = searchResp?.web?.results?.map((item) => ({
         title: item?.title,
@@ -69,8 +74,6 @@ function DisplayResult({ searchInputRecord }) {
         })
       );
 
-      console.log("Formatted Search Response:", formattedSearchResp);
-
       const { data, error } = await supabase
         .from("Chats")
         .insert([
@@ -78,7 +81,7 @@ function DisplayResult({ searchInputRecord }) {
             libId: libId,
             searchResult: formattedSearchResp,
             searchVideoResult: formattedVideoSearchResp,
-            userSearchInput: searchInput, // Use the passed searchInput
+            userSearchInput: searchInput,
           },
         ])
         .select();
@@ -89,14 +92,15 @@ function DisplayResult({ searchInputRecord }) {
       }
 
       console.log("Supabase Insert Data:", data);
-
-      await GetSearchRecords(); // Re-fetch records after insertion
-
+      await GetSearchRecords();
       setLoadingSearch(false);
 
-      await GenerateAIResp(formattedSearchResp, data[0]?.id);
+      if (data?.[0]?.id) {
+        await GenerateAIResp(formattedSearchResp, data[0].id);
+      }
     } catch (error) {
       console.error("Error fetching or processing search results:", error);
+      setLoadingSearch(false);
     }
   };
 
@@ -115,7 +119,7 @@ function DisplayResult({ searchInputRecord }) {
         const runResp = await axios.post("/api/get-inngest-status", {
           runId: runId,
         });
-        if (runResp?.data?.data[0]?.status === "Completed") {
+        if (runResp?.data?.data?.[0]?.status === "Completed") {
           console.log("Completed!!!");
           await GetSearchRecords();
           clearInterval(interval);
@@ -130,13 +134,17 @@ function DisplayResult({ searchInputRecord }) {
     let { data: Library, error } = await supabase
       .from("Library")
       .select("*,Chats(*)")
-      .eq("libId", libId);
+      .eq("libId", libId)
+      .order('id', { foreignTable: 'Chats', ascending: true });
 
     if (error) {
       console.error("Error fetching library records:", error);
       return;
     }
-    setSearchResult(Library[0]); // Update the state with the fetched library data
+
+    if (Library?.[0]) {
+      setSearchResult(Library[0]);
+    }
   };
 
   return (
@@ -144,12 +152,11 @@ function DisplayResult({ searchInputRecord }) {
       {!searchResult?.Chats && (
         <div>
           <div className="w-full h-5 bg-accent animate-pulse rounded-md"></div>
-            <div className="w-1/2 mt-2 h-5 bg-accent animate-pulse rounded-md"></div>
-            <div className="w-[70%] mt-2 h-5 bg-accent animate-pulse rounded-md"></div>
-          
-          
+          <div className="w-1/2 mt-2 h-5 bg-accent animate-pulse rounded-md"></div>
+          <div className="w-[70%] mt-2 h-5 bg-accent animate-pulse rounded-md"></div>
         </div>
       )}
+
       {searchResult?.Chats?.map((chat, index) => (
         <div key={index} className="mt-7">
           <h2 className="font-bold text-4xl text-gray-600">
@@ -197,6 +204,27 @@ function DisplayResult({ searchInputRecord }) {
           <hr className="my-5 border-gray-200" />
         </div>
       ))}
+
+      <div className="bg-white w-full p-3 px-5 rounded-lg shadow-md mt-6 flex justify-between fixed bottom-6 max-w-md lg:max-w-xl xl:max-w-3xl">
+        <input
+          placeholder="Type anything here..."
+          className="outline-none w-full mr-4"
+          onChange={(e) => setUserInput(e.target.value)}
+          value={userInput}
+        />
+        {userInput?.length > 0 && (
+          <Button
+            onClick={() => GetSearchApiResult(userInput)}
+            disabled={loadingSearch}
+          >
+            {loadingSearch ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              <Send />
+            )}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
