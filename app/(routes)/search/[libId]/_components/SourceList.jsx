@@ -20,11 +20,13 @@ function SourceList({ webResult, loadingSearch }) {
                     <h2 className='line-clamp-2 text-black text-xs'>{item?.title}</h2>
                 </div>
             ))}
-            {webResult?.length == 0 || !webResult && <div className='flex flex-wrap gap-2'>
+            {loadingSearch && <div className='flex flex-wrap gap-2'>
                 {[1, 2, 3, 4].map((item, index) => (
                     <div className='w-[200px] h-[100px] rounded-2xl bg-accent animate-pulse' key={index}>
                     </div>
                 ))}
+
+
             </div>}
         </div>
     )

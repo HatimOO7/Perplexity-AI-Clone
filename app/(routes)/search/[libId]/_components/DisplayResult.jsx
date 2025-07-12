@@ -27,6 +27,7 @@ function DisplayResult({ searchInputRecord }) {
   const [activeTab, setActiveTab] = useState("Answer");
   const [searchResult, setSearchResult] = useState(searchInputRecord); // Consider initializing with null or an empty object
   const { libId } = useParams();
+  const [loadingSearch, setLoadingSearch] = useState(false);
 
    useEffect(() => {
     //update this methods
@@ -37,6 +38,7 @@ function DisplayResult({ searchInputRecord }) {
   }, [searchInputRecord]);
 
   const GetSearchApiResult = async (searchInput) => {
+    setLoadingSearch(true);
     try {
       // Uncomment and use this to get actual search results
       const result = await axios.post("/api/brave-search-api", {
@@ -90,6 +92,8 @@ function DisplayResult({ searchInputRecord }) {
 
       await GetSearchRecords(); // Re-fetch records after insertion
 
+      setLoadingSearch(false);
+
       await GenerateAIResp(formattedSearchResp, data[0]?.id);
     } catch (error) {
       console.error("Error fetching or processing search results:", error);
@@ -137,6 +141,15 @@ function DisplayResult({ searchInputRecord }) {
 
   return (
     <div className="mt-7">
+      {!searchResult?.Chats && (
+        <div>
+          <div className="w-full h-5 bg-accent animate-pulse rounded-md"></div>
+            <div className="w-1/2 mt-2 h-5 bg-accent animate-pulse rounded-md"></div>
+            <div className="w-[70%] mt-2 h-5 bg-accent animate-pulse rounded-md"></div>
+          
+          
+        </div>
+      )}
       {searchResult?.Chats?.map((chat, index) => (
         <div key={index} className="mt-7">
           <h2 className="font-bold text-4xl text-gray-600">
@@ -171,7 +184,7 @@ function DisplayResult({ searchInputRecord }) {
 
           <div>
             {activeTab === "Answer" ? (
-              <AnswerDisplay chat={chat} />
+              <AnswerDisplay chat={chat} loading={loadingSearch} />
             ) : activeTab === "Images" ? (
               <ImageListTab chat={chat} />
             ) : activeTab === "Videos" ? (
