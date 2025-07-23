@@ -76,11 +76,10 @@ function ChatInputBox() {
             />
           </TabsContent>
 
-          {/* Controls Row (Tabs + Buttons) */}
+          {/* Controls Row */}
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 mt-2">
-            {/* Left: Tabs and tools row (always horizontal) */}
-            <div className="flex w-full items-center justify-between gap-2 flex-wrap">
-              {/* Tabs List */}
+            {/* Tabs (Search/Research) - only on lg and up */}
+            <div className="hidden lg:flex gap-2">
               <TabsList className="flex gap-2">
                 <TabsTrigger
                   value="Search"
@@ -99,81 +98,35 @@ function ChatInputBox() {
                   Research
                 </TabsTrigger>
               </TabsList>
-
-              {/* Small & Medium: More + Submit Buttons */}
-              <div className="flex items-center gap-2 lg:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
-                      <MoreHorizontal className="text-gray-500 h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      <Cpu className="h-4 w-4 mr-2 text-gray-600" />
-                      Models
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Globe className="h-4 w-4 mr-2 text-gray-600" />
-                      Web
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Paperclip className="h-4 w-4 mr-2 text-gray-600" />
-                      Attach
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Mic className="h-4 w-4 mr-2 text-gray-600" />
-                      Mic
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Submit Button */}
-                <Button
-                  className="bg-primary text-white"
-                  onClick={() => {
-                    if (userSearchInput) onSearchQuery();
-                  }}
-                  disabled={loading}
-                >
-                  {!userSearchInput ? (
-                    <AudioLines className="h-5 w-5" />
-                  ) : (
-                    <ArrowRight className="h-5 w-5" />
-                  )}
-                </Button>
-              </div>
             </div>
 
-            {/* Large screen buttons only */}
-            <div className="hidden lg:flex gap-2 items-center">
+            {/* Right Side: More + Submit (all screens) */}
+            <div className="flex items-center gap-2 justify-end w-full">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost">
-                    <Cpu className="text-gray-500 h-5 w-5" />
+                    <MoreHorizontal className="text-gray-500 h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  {AIModelsOption.map((model, index) => (
-                    <DropdownMenuItem key={index}>
-                      <div>
-                        <h2 className="text-sm">{model.name}</h2>
-                        <p className="text-xs text-muted-foreground">{model.desc}</p>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
+                  <DropdownMenuItem>
+                    <Cpu className="h-4 w-4 mr-2 text-gray-600" />
+                    Models
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Globe className="h-4 w-4 mr-2 text-gray-600" />
+                    Web
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Paperclip className="h-4 w-4 mr-2 text-gray-600" />
+                    Attach
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Mic className="h-4 w-4 mr-2 text-gray-600" />
+                    Mic
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              <Button variant="ghost">
-                <Globe className="text-gray-500 h-5 w-5" />
-              </Button>
-              <Button variant="ghost">
-                <Paperclip className="text-gray-500 h-5 w-5" />
-              </Button>
-              <Button variant="ghost">
-                <Mic className="text-gray-500 h-5 w-5" />
-              </Button>
 
               <Button
                 className="bg-primary text-white"
