@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-    ArrowRight,
+  ArrowRight,
   Atom,
   AudioLines,
   Cpu,
@@ -11,15 +11,13 @@ import {
   Mic,
   Paperclip,
   SearchCheck,
+  MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AIModelsOption } from "@/services/Shared";
@@ -28,117 +26,174 @@ import { useUser } from "@clerk/nextjs";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 
-
-function ChatInputBox (){
+function ChatInputBox() {
   const [userSearchInput, setUserSearchInput] = useState();
-  const [searchType,setSearchType]= useState('search');
-  
+  const [searchType, setSearchType] = useState("search");
+
   const { user } = useUser();
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
+
   const onSearchQuery = async () => {
     setLoading(true);
-    const libId=uuidv4();
-    const {data} = await supabase.from('Library').insert([
+    const libId = uuidv4();
+    const { data } = await supabase.from("Library").insert([
       {
         searchinput: userSearchInput,
         userEmail: user?.primaryEmailAddress?.emailAddress,
         type: searchType,
-        libId: libId
-      }
+        libId: libId,
+      },
     ]).select();
     setLoading(false);
-    router.push('/search/' + libId);
+    router.push("/search/" + libId);
+    console.log(data?.[0]);
+  };
 
-    console.log(data[0]);
-  }
   return (
-    <div className="flex flex-col h-screen items-center justify-center w-full">
+    <div className="flex flex-col h-screen items-center justify-center w-full px-4">
       <Image src="/logo.png" alt="Logo" width={260} height={250} />
-      <div className="p-2 w-full max-w-2xl border rounded-2xl mt-10">
-        <div className="flex items-end justify-between">
-          <Tabs defaultValue="Search" className="w-[400px]">
-            <TabsContent value="Search">
 
-              
-              <input
-                type="text"
-                placeholder="Ask Anything"
-                onChange={(e) => setUserSearchInput(e.target.value)}
-                className="w-full p-4 outline-none "
-              />
+      {/* Chat Input Outer Box */}
+      <div className="p-4 w-full max-w-2xl border rounded-2xl mt-10 shadow-md bg-white">
+        <Tabs defaultValue="Search" className="w-full">
+          {/* Input Field */}
+          <TabsContent value="Search">
+            <input
+              type="text"
+              placeholder="Ask Anything"
+              onChange={(e) => setUserSearchInput(e.target.value)}
+              className="w-full p-4 outline-none bg-transparent placeholder-gray-400"
+            />
+          </TabsContent>
 
+          <TabsContent value="Research">
+            <input
+              type="text"
+              placeholder="Research Anything"
+              onChange={(e) => setUserSearchInput(e.target.value)}
+              className="w-full p-4 outline-none bg-transparent placeholder-gray-400"
+            />
+          </TabsContent>
 
-            </TabsContent>
+          {/* Controls Row (Tabs + Buttons) */}
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 mt-2">
+            {/* Left: Tabs and tools row (always horizontal) */}
+            <div className="flex w-full items-center justify-between gap-2 flex-wrap">
+              {/* Tabs List */}
+              <TabsList className="flex gap-2">
+                <TabsTrigger
+                  value="Search"
+                  className="text-primary"
+                  onClick={() => setSearchType("search")}
+                >
+                  <SearchCheck className="mr-1 h-4 w-4" />
+                  Search
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Research"
+                  className="text-primary"
+                  onClick={() => setSearchType("research")}
+                >
+                  <Atom className="mr-1 h-4 w-4" />
+                  Research
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="Research">
-              <input
-                type="text"
-                placeholder="Research Anything"
-                 onChange={(e) => setUserSearchInput(e.target.value)}
-                className="w-full p-4 outline-none "
-              />
-            </TabsContent>
-            <TabsList>
-              <TabsTrigger value="Search" className={"text-primary"} onClick={()=>setSearchType('search')}>
-                <SearchCheck />
-                Search
-              </TabsTrigger>
-              <TabsTrigger value="Research" className={"text-primary"} onClick={()=>setSearchType('research')}>
-                <Atom />
-                Research
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+              {/* Small & Medium: More + Submit Buttons */}
+              <div className="flex items-center gap-2 lg:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost">
+                      <MoreHorizontal className="text-gray-500 h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <Cpu className="h-4 w-4 mr-2 text-gray-600" />
+                      Models
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Globe className="h-4 w-4 mr-2 text-gray-600" />
+                      Web
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Paperclip className="h-4 w-4 mr-2 text-gray-600" />
+                      Attach
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Mic className="h-4 w-4 mr-2 text-gray-600" />
+                      Mic
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-          <div className="flex gap-4 items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost">
-                  <Cpu className="text-gray-500 h-5 w-5" />
+                {/* Submit Button */}
+                <Button
+                  className="bg-primary text-white"
+                  onClick={() => {
+                    if (userSearchInput) onSearchQuery();
+                  }}
+                  disabled={loading}
+                >
+                  {!userSearchInput ? (
+                    <AudioLines className="h-5 w-5" />
+                  ) : (
+                    <ArrowRight className="h-5 w-5" />
+                  )}
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {/*<DropdownMenuLabel>My Account</DropdownMenuLabel>
-    <DropdownMenuSeparator /> */}
+              </div>
+            </div>
 
-                {AIModelsOption.map((model, index) => (
-                  <DropdownMenuItem key={index}>
-                    <div className="mb-1">
-                      <h2 className="text-sm">{model.name}</h2>
-                      <p className="text-x5">{model.desc}</p>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Large screen buttons only */}
+            <div className="hidden lg:flex gap-2 items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost">
+                    <Cpu className="text-gray-500 h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {AIModelsOption.map((model, index) => (
+                    <DropdownMenuItem key={index}>
+                      <div>
+                        <h2 className="text-sm">{model.name}</h2>
+                        <p className="text-xs text-muted-foreground">{model.desc}</p>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <Button variant="ghost">
-              <Globe className="text-gray-500 h-5 w-5" />
-            </Button>
+              <Button variant="ghost">
+                <Globe className="text-gray-500 h-5 w-5" />
+              </Button>
+              <Button variant="ghost">
+                <Paperclip className="text-gray-500 h-5 w-5" />
+              </Button>
+              <Button variant="ghost">
+                <Mic className="text-gray-500 h-5 w-5" />
+              </Button>
 
-            <Button variant="ghost">
-              <Paperclip className="text-gray-500 h-5 w-5" />
-            </Button>
-            <Button variant="ghost">
-              <Mic className="text-gray-500 h-5 w-5" />
-            </Button>
-
-            <Button
-              className="cursor-pointer"
-              onClick={() => {
-                userSearchInput ? onSearchQuery() : null;
-              }}
-            >
-              {!userSearchInput?<AudioLines className='text-white h-5 w-5' />
-            :<ArrowRight  className='text-white h-5 w-5' disabled={loading}/>}
-            </Button>
+              <Button
+                className="bg-primary text-white"
+                onClick={() => {
+                  if (userSearchInput) onSearchQuery();
+                }}
+                disabled={loading}
+              >
+                {!userSearchInput ? (
+                  <AudioLines className="h-5 w-5" />
+                ) : (
+                  <ArrowRight className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
+        </Tabs>
       </div>
     </div>
   );
-};
+}
 
 export default ChatInputBox;

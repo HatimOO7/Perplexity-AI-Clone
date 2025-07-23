@@ -1,102 +1,133 @@
-"use client"
-import { SEARCH_RESULT } from '@/services/Shared';
+'use client'
 import axios from 'axios';
-import { Cpu, DollarSign, Globe, Palette, Star, Tv, Volleyball } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import {
+  Cpu, DollarSign, Globe, Palette, Star, Tv, Volleyball, MoreVertical
+} from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
 import NewsCard from './_components/NewsCard';
 
 const options = [
-    {
-        title: 'Top',
-        icon: Star
-    },
-    {
-        title: 'Tech & Science',
-        icon: Cpu
-    },
-    {
-        title: 'Finance',
-        icon: DollarSign
-    },
-    {
-        title: 'Art & Culture',
-        icon: Palette
-    },
-    {
-        title: 'Sports',
-        icon: Volleyball
-    },
-    {
-        title: 'Entertainment',
-        icon: Tv
-    },
-]
+  { title: 'Top', icon: Star },
+  { title: 'Tech & Science', icon: Cpu },
+  { title: 'Finance', icon: DollarSign },
+  { title: 'Art & Culture', icon: Palette },
+  { title: 'Sports', icon: Volleyball },
+  { title: 'Entertainment', icon: Tv },
+];
 
 function Discover() {
+  const [selectedOption, setSelectedOption] = useState('Top');
+  const [latestNews, setLatestNews] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
-    const [selectedOption, setSelectedOption] = useState('Top');
-    const [latestNews, setLatestNews] = useState();
-    useEffect(() => {
-        selectedOption && GetSearchResult();
-    }, [selectedOption])
+  useEffect(() => {
+    selectedOption && GetSearchResult();
+  }, [selectedOption]);
 
-    const GetSearchResult = async () => {
-        const result = await axios.post('/api/brave-search-api', {
-            searchInput: selectedOption + ' Latest News & Updates',
-            searchType: 'Search'
-        })
-        console.log(result.data);
-        const webSearchResult = result?.data?.web?.results;
-        setLatestNews(webSearchResult);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
     }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    return (
-        <div className='mt-20 px-10 md:px-20 lg:px-36 xl:px-56 '>
-            <h2 className='font-bold text-3xl flex gap-2 items-center'> <Globe /> <span>Discover</span></h2>
-            <div className='flex mt-5'>
-                {options.map((option, index) => (
-                    <div key={index}
-                        onClick={() => setSelectedOption(option.title)}
-                        className={`flex gap-1 p-1 px-3 hover:text-primary items-center rounded-full
-                    cursor-pointer ${selectedOption == option.title && 'bg-accent text-primary'}`}>
-                        <option.icon className='h-4 w-4' />
-                        <h2 className='text-sm'>{option.title}</h2>
-                    </div>
-                ))}
+  const GetSearchResult = async () => {
+    const result = await axios.post('/api/brave-search-api', {
+      searchInput: selectedOption + ' Latest News & Updates',
+      searchType: 'Search'
+    });
+    const webSearchResult = result?.data?.web?.results || [];
+    setLatestNews(webSearchResult);
+  };
+
+  return (
+    <div className="mt-20 px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48">
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-bold text-2xl sm:text-3xl flex items-center gap-2">
+          <Globe className="w-6 h-6" />
+          <span>Discover</span>
+        </h2>
+
+        {/* Three vertical dots with vertical translate to align middle dot */}
+        <div className="lg:hidden relative" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label="Open categories menu"
+            className="p-1 hover:text-primary"
+            style={{ transform: 'translateY(2px)' }}
+          >
+            <MoreVertical className="w-6 h-6" />
+          </button>
+
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-56 bg-white border rounded-md shadow-lg z-50">
+              {options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedOption(option.title);
+                    setMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-muted transition
+                    ${selectedOption === option.title ? 'bg-accent text-primary' : ''}`}
+                >
+                  <option.icon className="h-4 w-4" />
+                  <span>{option.title}</span>
+                </button>
+              ))}
             </div>
-
-            <div className="w-full">
-                {latestNews?.map((news, index) => {
-                    const isFullWidth = index % 4 === 0;
-
-                    if (isFullWidth) {
-                        // Full width card
-                        return (
-                            <div key={index} className="w-full mb-4">
-                                <NewsCard news={news} />
-                            </div>
-                        );
-                    }
-
-                    // Group next 3 cards into a grid
-                    const group = latestNews.slice(index, index + 3);
-
-                    if (index % 4 === 1) {
-                        return (
-                            <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                {group.map((item, i) => (
-                                    <NewsCard news={item} key={index + i} />
-                                ))}
-                            </div>
-                        );
-                    }
-
-                    return null; // skip rendering from index 2 and 3 directly; they're rendered in the group above
-                })}
-            </div>
-
+          )}
         </div>
-    )
+      </div>
+
+      {/* Large screen category buttons */}
+      <div className="hidden lg:flex flex-wrap gap-2 mb-6">
+        {options.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => setSelectedOption(option.title)}
+            className={`flex items-center gap-2 px-4 py-1 text-sm rounded-full 
+              border border-transparent hover:text-primary
+              ${selectedOption === option.title ? 'bg-accent text-primary' : ''}`}
+          >
+            <option.icon className="h-4 w-4" />
+            <span>{option.title}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* News Cards */}
+      <div className="w-full">
+        {latestNews.map((news, index) => {
+          if (index % 4 === 0) {
+            return (
+              <div key={index} className="w-full mb-4">
+                <NewsCard news={news} />
+              </div>
+            );
+          }
+
+          if (index % 4 === 1) {
+            const group = latestNews.slice(index, index + 3);
+            return (
+              <div key={index} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                {group.map((item, i) => (
+                  <NewsCard news={item} key={`${index + i}`} />
+                ))}
+              </div>
+            );
+          }
+
+          return null;
+        })}
+      </div>
+    </div>
+  );
 }
 
-export default Discover
+export default Discover;

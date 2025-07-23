@@ -1,5 +1,3 @@
-
-
 "use client";
 import { supabase } from "@/services/supabase";
 import { useUser } from "@clerk/nextjs";
