@@ -143,7 +143,7 @@ function DisplayResult({ searchInputRecord }) {
   };
 
   return (
-    <div className="mt-7 pb-32">
+    <div className="mt-7 pb-32 ml-0 pl-0">
       {!searchResult?.Chats && (
         <div>
           <div className="w-full h-5 bg-accent animate-pulse rounded-md"></div>

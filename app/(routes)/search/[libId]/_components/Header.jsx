@@ -8,10 +8,10 @@ function Header({ searchInputRecord }) {
     console.log("🔍 Header received:", searchInputRecord);
 
     return (
-        <div className='p-4 border-b flex flex-wrap items-center gap-3'>
+        <div className='p-4 border-b flex flex-wrap items-center gap-6'>
 
             {/* Left side: User + Time */}
-            <div className='flex gap-2 items-center'>
+            <div className='flex gap-6 items-center'>
                 <UserButton />
                 <div className='flex gap-1 items-center'>
                     <Clock className='h-5 w-5 text-gray-500' />
