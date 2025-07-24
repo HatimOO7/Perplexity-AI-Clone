@@ -158,12 +158,13 @@ function DisplayResult({ searchInputRecord }) {
             {chat?.userSearchInput}
           </h2>
 
-          <div className="flex flex-wrap items-center gap-4 border-b border-gray-200 pb-2 mt-6">
+          {/* Tabs */}
+          <div className="flex items-center justify-start gap-4 overflow-x-auto pb-2 mt-6 border-b border-gray-200 scrollbar-hide">
             {tabs.map(({ label, icon: Icon, badge }) => (
               <button
                 key={label}
                 onClick={() => setActiveTab(label)}
-                className={`flex items-center gap-1 relative text-sm font-medium text-gray-700 hover:text-black ${
+                className={`flex items-center gap-1 relative text-sm font-medium text-gray-700 hover:text-black whitespace-nowrap ${
                   activeTab === label ? "text-black" : ""
                 }`}
               >
@@ -179,9 +180,9 @@ function DisplayResult({ searchInputRecord }) {
                 )}
               </button>
             ))}
-           
           </div>
 
+          {/* Tab Content */}
           <div className="mt-4">
             {activeTab === "Answer" ? (
               <AnswerDisplay chat={chat} loading={loadingSearch} />
@@ -201,15 +202,14 @@ function DisplayResult({ searchInputRecord }) {
       {/* Responsive Input Box */}
       <div
         className="
-    bg-white p-3 px-5 rounded-lg shadow-md flex items-center gap-3
-    justify-between
-    bottom-6
-    right-6
-    w-[90%] sm:w-[400px] md:w-[500px] lg:w-[600px]
-    z-50
-
-    lg:right-[20%]
-  "
+        bg-white p-3 px-5 rounded-lg shadow-md flex items-center gap-3
+        justify-between
+        bottom-6
+        right-6
+        w-[90%] sm:w-[400px] md:w-[500px] lg:w-[600px]
+        z-50
+        lg:right-[20%]
+      "
       >
         <input
           placeholder="Type anything here..."

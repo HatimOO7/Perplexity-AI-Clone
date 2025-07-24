@@ -145,6 +145,13 @@
   scrollbar-width: none; /* Firefox */
 }
 
+/* In your global CSS (globals.css or layout.tsx) */
+html, body {
+  overflow-x: hidden !important;
+  touch-action: pan-y;
+}
+
+
 
 @layer base {
   * {

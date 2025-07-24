@@ -8,10 +8,10 @@ function Header({ searchInputRecord }) {
     console.log("🔍 Header received:", searchInputRecord);
 
     return (
-        <div className='p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-y-3'>
-            
+        <div className='p-4 border-b flex flex-wrap items-center gap-3'>
+
             {/* Left side: User + Time */}
-            <div className='flex gap-2 items-center w-full md:w-auto'>
+            <div className='flex gap-2 items-center'>
                 <UserButton />
                 <div className='flex gap-1 items-center'>
                     <Clock className='h-5 w-5 text-gray-500' />
@@ -22,16 +22,18 @@ function Header({ searchInputRecord }) {
             </div>
 
             {/* Middle: Search Input Text */}
-            <h2 className='text-sm md:text-base text-center md:text-left line-clamp-1 max-w-full md:max-w-md w-full'>
-                {searchInputRecord?.searchinput}
-            </h2>
+            <div className='flex-1 text-center md:text-left'>
+                <h2 className='text-sm md:text-base line-clamp-1'>
+                    {searchInputRecord?.searchinput}
+                </h2>
+            </div>
 
-            {/* Right side: Buttons */}
-            <div className='flex gap-2 justify-end w-full md:w-auto'>
+            {/* Right side: Buttons (slightly left from full-right) */}
+            <div className='flex gap-2 ml-auto'> {/* Changed from ml-auto to ms-6 */}
                 <Button size="sm">
                     <Link className="h-4 w-4" />
                 </Button>
-                <Button size="sm" className="flex gap-1 items-center">
+                <Button size="sm" className="flex gap-1 items-center mr-6">
                     <Send className="h-4 w-4" />
                     Share
                 </Button>
