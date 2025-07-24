@@ -1,27 +1,29 @@
-import Image from 'next/image'
-import React from 'react'
+import React from 'react';
 
 function VideoListTab({ chat }) {
   return (
-    <div className='flex gap-5 flex-wrap mt-6'>
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-6">
       {(chat?.searchVideoResult || []).map((item, index) => (
-        <div key={index} className='flex flex-col bg-accent rounded-xl p-3 w-[200px] h-[180px]'>
+        <div
+          key={index}
+          className="flex flex-col bg-white shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl p-3 cursor-pointer transform hover:scale-[1.03]"
+          onClick={() => window.open(item?.url, '_blank')}
+        >
+          <div className="h-[100px] w-full flex items-center justify-center overflow-hidden rounded-xl bg-gray-100">
+            <img
+              src={item?.thumbnail || item.img || "/placeholder.png"}
+              alt={item?.title || "Video Thumbnail"}
+              className="object-cover h-full w-full"
+            />
+          </div>
 
-          <img
-            src={item?.thumbnail || item.img || "/placeholder.png"} // use placeholder if missing
-            alt={item?.title || "Video Thumbnail"}
-            width={200}
-            height={100}
-            onClick={() => window.open(item?.url, '_blank')}
-            className='object-contain cursor-pointer text-center h-[100px]'
-          />
-
-          <h2 className='text-xs mt-2 text-center line-clamp-3'>{item?.title || "No Title"}</h2>
-
+          <h2 className="text-sm mt-3 text-center font-medium text-gray-800 line-clamp-3">
+            {item?.title || "No Title"}
+          </h2>
         </div>
       ))}
     </div>
-  )
+  );
 }
 
-export default VideoListTab
+export default VideoListTab;

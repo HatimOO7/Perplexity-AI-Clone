@@ -1,4 +1,4 @@
-// DisplayResult.jsx
+"use client";
 import React, { useEffect, useState } from "react";
 import AnswerDisplay from "./AnswerDisplay";
 import axios from "axios";
@@ -21,7 +21,7 @@ const tabs = [
   { label: "Answer", icon: LucideSparkles },
   { label: "Images", icon: LucideImage },
   { label: "Videos", icon: LucideVideo },
-  { label: "Sources", icon: LucideList, badge: 9 },
+  { label: "Sources", icon: LucideList },
 ];
 
 function DisplayResult({ searchInputRecord }) {
@@ -50,8 +50,6 @@ function DisplayResult({ searchInputRecord }) {
         searchInput: searchInput,
         searchType: searchInputRecord?.type ?? "Search",
       });
-
-      console.log("Brave Search API Result:", result.data);
 
       const searchResp = result.data;
 
@@ -91,7 +89,6 @@ function DisplayResult({ searchInputRecord }) {
         return;
       }
 
-      console.log("Supabase Insert Data:", data);
       await GetSearchRecords();
       setLoadingSearch(false);
 
@@ -112,7 +109,6 @@ function DisplayResult({ searchInputRecord }) {
         recordId: recordId,
       });
 
-      console.log("AI Response:", result.data);
       const runId = result.data;
 
       const interval = setInterval(async () => {
@@ -120,7 +116,6 @@ function DisplayResult({ searchInputRecord }) {
           runId: runId,
         });
         if (runResp?.data?.data?.[0]?.status === "Completed") {
-          console.log("Completed!!!");
           await GetSearchRecords();
           clearInterval(interval);
         }
@@ -135,7 +130,7 @@ function DisplayResult({ searchInputRecord }) {
       .from("Library")
       .select("*,Chats(*)")
       .eq("libId", libId)
-      .order('id', { foreignTable: 'Chats', ascending: true });
+      .order("id", { foreignTable: "Chats", ascending: true });
 
     if (error) {
       console.error("Error fetching library records:", error);
@@ -148,7 +143,7 @@ function DisplayResult({ searchInputRecord }) {
   };
 
   return (
-    <div className="mt-7">
+    <div className="mt-7 pb-32">
       {!searchResult?.Chats && (
         <div>
           <div className="w-full h-5 bg-accent animate-pulse rounded-md"></div>
@@ -159,11 +154,11 @@ function DisplayResult({ searchInputRecord }) {
 
       {searchResult?.Chats?.map((chat, index) => (
         <div key={index} className="mt-7">
-          <h2 className="font-bold text-4xl text-gray-600">
+          <h2 className="font-bold text-2xl sm:text-3xl md:text-4xl text-gray-700">
             {chat?.userSearchInput}
           </h2>
 
-          <div className="flex items-center space-x-6 border-b border-gray-200 pb-2 mt-6">
+          <div className="flex flex-wrap items-center gap-4 border-b border-gray-200 pb-2 mt-6">
             {tabs.map(({ label, icon: Icon, badge }) => (
               <button
                 key={label}
@@ -184,12 +179,10 @@ function DisplayResult({ searchInputRecord }) {
                 )}
               </button>
             ))}
-            <div className="ml-auto text-sm text-gray-500">
-              1 task <span className="ml-1">–</span>
-            </div>
+           
           </div>
 
-          <div>
+          <div className="mt-4">
             {activeTab === "Answer" ? (
               <AnswerDisplay chat={chat} loading={loadingSearch} />
             ) : activeTab === "Images" ? (
@@ -201,14 +194,26 @@ function DisplayResult({ searchInputRecord }) {
             ) : null}
           </div>
 
-          <hr className="my-5 border-gray-200" />
+          <hr className="my-6 border-gray-200" />
         </div>
       ))}
 
-      <div className="bg-white w-full p-3 px-5 rounded-lg shadow-md mt-6 flex justify-between fixed bottom-6 max-w-md lg:max-w-xl xl:max-w-3xl">
+      {/* Responsive Input Box */}
+      <div
+        className="
+    bg-white p-3 px-5 rounded-lg shadow-md flex items-center gap-3
+    justify-between
+    bottom-6
+    right-6
+    w-[90%] sm:w-[400px] md:w-[500px] lg:w-[600px]
+    z-50
+
+    lg:right-[20%]
+  "
+      >
         <input
           placeholder="Type anything here..."
-          className="outline-none w-full mr-4"
+          className="outline-none w-full mr-4 text-sm"
           onChange={(e) => setUserInput(e.target.value)}
           value={userInput}
         />
@@ -218,9 +223,9 @@ function DisplayResult({ searchInputRecord }) {
             disabled={loadingSearch}
           >
             {loadingSearch ? (
-              <Loader2Icon className="animate-spin" />
+              <Loader2Icon className="animate-spin w-4 h-4" />
             ) : (
-              <Send />
+              <Send className="w-4 h-4" />
             )}
           </Button>
         )}

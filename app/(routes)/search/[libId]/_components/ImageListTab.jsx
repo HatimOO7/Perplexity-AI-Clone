@@ -1,27 +1,28 @@
-import Image from 'next/image'
-import React from 'react'
+import React from 'react';
 
 function ImageListTab({ chat }) {
     return (
-        <div className='flex gap-5 flex-wrap  mt-6 '>
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-6">
             {chat.searchResult.map((item, index) => (
-                <div key={index} className='flex flex-col bg-accent rounded-xl p-3 w-[200px] h-[180px]'>
-                    <img src={item?.original || item.img} alt={item.title}
-                        width={200}
-                        height={100}
-                        key={index}
-                        onClick={() => window.open(item.original, '_blank')}
-                        className='bg-accent rounded-xl p-3 text-sm  object-contain cursor-pointer text-center h-[100px]'
-                    />
-
-                    <h2 className='text-xs mt-2 text-center line-clamp-3'>{item.title}</h2>
-
+                <div
+                    key={index}
+                    className="flex flex-col bg-white shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl p-3 cursor-pointer transform hover:scale-[1.03]"
+                    onClick={() => window.open(item.original, '_blank')}
+                >
+                    <div className="h-[100px] w-full flex items-center justify-center overflow-hidden rounded-xl bg-gray-100">
+                        <img
+                            src={item?.original || item.img}
+                            alt={item.title}
+                            className="object-cover h-full w-full"
+                        />
+                    </div>
+                    <h2 className="text-sm mt-3 text-center font-medium text-gray-800 line-clamp-3">
+                        {item.title}
+                    </h2>
                 </div>
-
-            ))
-            }
-        </div >
-    )
+            ))}
+        </div>
+    );
 }
 
 export default ImageListTab;
