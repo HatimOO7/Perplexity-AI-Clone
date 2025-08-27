@@ -1,11 +1,8 @@
 "use client";
-import { usePathname } from 'next/navigation';
-
-import React from 'react'
-import Image from 'next/image';
-//import { UserButton } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-
 import {
   Sidebar,
   SidebarContent,
@@ -15,93 +12,100 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Compass, GalleryHorizontal, LogIn, Search } from 'lucide-react';
-import { SignOutButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
-
+} from "@/components/ui/sidebar";
+import { Compass, GalleryHorizontal, Search } from "lucide-react";
+import {
+  SignOutButton,
+  SignUpButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 
 const MenuOptions = [
-  {
-    title: "Home",
-    icon: Search,
-    path: "/",
-  },
-  {
-    title: "Discover",
-    icon: Compass,
-    path: "/discover",
-  },
-  {
-    title: "Library",
-    icon: GalleryHorizontal,
-    path: "/library",
-  },
-  
+  { title: "Home", icon: Search, path: "/" },
+  { title: "Discover", icon: Compass, path: "/discover" },
+  { title: "Library", icon: GalleryHorizontal, path: "/library" },
 ];
 
 function AppSidebar() {
-
-    const path=usePathname();
-    const {user} = useUser();
- 
-  const sidebarBackgroundColor = 'oklch(0.953 0 196.25)';
+  const path = usePathname();
+  const { user } = useUser();
+  const sidebarBackgroundColor = "oklch(0.953 0 196.25)";
 
   return (
-    <Sidebar style={{ backgroundColor: sidebarBackgroundColor }}>
-      <SidebarHeader style={{ backgroundColor: sidebarBackgroundColor }} className="flex items-center py-5" >
-        
+    <Sidebar
+      style={{ backgroundColor: sidebarBackgroundColor }}
+      className="h-screen flex flex-col"
+    >
+      {/* Header */}
+      <SidebarHeader
+        style={{ backgroundColor: sidebarBackgroundColor }}
+        className="flex items-center py-5"
+      >
         <Image src={"/logo.png"} alt="Logo" width={150} height={100} />
       </SidebarHeader>
-      <SidebarContent style={{ backgroundColor: sidebarBackgroundColor }}>
+
+      {/* Content (scrollable) */}
+      <SidebarContent
+        style={{ backgroundColor: sidebarBackgroundColor }}
+        className="flex-1 overflow-y-auto"
+      >
         <SidebarGroup>
           <SidebarMenu>
-              {MenuOptions.map((menu, index) => (
-                   <SidebarMenuItem key={index}>
-                 <SidebarMenuButton asChild className={`p-5 py-6 hover:bg-transparent hover:font-bold ${
+            {MenuOptions.map((menu, index) => (
+              <SidebarMenuItem key={index}>
+                <SidebarMenuButton
+                  asChild
+                  className={`p-5 py-6 hover:bg-transparent hover:font-bold ${
                     path?.includes(menu.path) && "font-bold"
-                  }`}>
-
-                   <a href={menu.path} className=''>
-                       <menu.icon className='h-8 w-8'/> <span className='text-lg'>{menu.title}</span>
-                   
-                   
-                   </a>
-
-                 </SidebarMenuButton>
-                 </SidebarMenuItem>
-              ))}
+                  }`}
+                >
+                  <a href={menu.path}>
+                    <menu.icon className="h-8 w-8" />{" "}
+                    <span className="text-lg">{menu.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
-         {!user ? <SignUpButton mode="modal">
+
+          {!user ? (
+            <SignUpButton mode="modal">
               <Button className="rounded-full mx-4 mt-4 cursor-pointer">
                 Sign Up
               </Button>
-            </SignUpButton> :
+            </SignUpButton>
+          ) : (
             <SignOutButton>
               <Button className="rounded-full mx-4 mt-4 cursor-pointer">
                 Logout
               </Button>
-            </SignOutButton>}
+            </SignOutButton>
+          )}
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter style={{ backgroundColor: sidebarBackgroundColor }}>
+
+      {/* Footer (fixed at bottom, never leaves gap) */}
+      <SidebarFooter
+        style={{ backgroundColor: sidebarBackgroundColor }}
+        className="shrink-0"
+      >
         <div className="p-3 flex flex-col">
-          
           <h2 className="text-gray-400 mt-3">Try Pro</h2>
           <p className="text-gray-400">
             Upgrade for image upload, smarter AI & more copilot
           </p>
-
           <Button
             variant={"secondary"}
-            className={"text-gray-500 cursor-pointer mb-3"}
+            className="text-gray-500 cursor-pointer mb-3"
           >
             Learn More
           </Button>
           <UserButton />
         </div>
-        
       </SidebarFooter>
-  </Sidebar>
-  )
+    </Sidebar>
+  );
 }
-export default AppSidebar
+
+export default AppSidebar;
